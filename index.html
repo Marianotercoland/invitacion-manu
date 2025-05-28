@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>🦑 Ddakji Challenge: Manu's Birthday 🦑</title>
+    <meta property="og:title" content="🦑 ¡Ddakji Challenge para el cumple de Manu! 🦑">
+    <meta property="og:description" content="¡Acepta el reto y gana tu invitación al cumpleaños de Manu jugando al Ddakji!">
+    <!-- CAMBIA ESTA URL por una imagen tuya de 1200x630 o similar -->
+    <meta property="og:image" content="https://i.imgur.com/A5gqH3b.png"> 
+    <!-- CAMBIA ESTA URL a la final donde alojarás el HTML -->
+    <meta property="og:url" content="TU_URL_FINAL_AQUI.html"> 
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- <link rel="icon" href="favicon.png" type="image/png"> -->
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+            user-select: none;
+        }
+
+        .sg-symbols-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .sg-symbols-pattern::before {
+            content: "ⵔ △ ▢ ⵔ △ ▢ ⵔ △ ▢ ⵔ △ ▢ ⵔ △ ▢ ⵔ △ ▢ ⵔ △ ▢ ⵔ △ ▢ ⵔ △ ▢ ⵔ △ ▢ ⵔ △ ▢ ⵔ △ ▢";
+            position: absolute;
+            width: 200%; 
+            height: 200%; 
+            top: -50%;
+            left: -50%;
+            font-size: 50px; 
+            color: rgba(255, 255, 255, 0.04);
+            line-height: 100px; 
+            letter-spacing: 50px; 
+            text-align: center;
+            transform: rotate(-15deg);
+            animation: floatSymbols 20s linear infinite;
+        }
+        
+        @keyframes floatSymbols {
+            0% { transform: rotate(-15deg) translate(0, 0); }
+            25% { transform: rotate(-15deg) translate(10px, 5px); }
+            50% { transform: rotate(-15deg) translate(0, 10px); }
+            75% { transform: rotate(-15deg) translate(-10px, 5px); }
+            100% { transform: rotate(-15deg) translate(0, 0); }
+        }
+
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            padding: 10px;
+            opacity: 0; 
+            animation: fadeInGame 1s 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInGame {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .title {
+            color: #FFD700; 
+            font-size: 2.1rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px; 
+            text-shadow: 0 0 5px #FF0054, 0 0 10px #FF0054, 2px 2px 2px rgba(0,0,0,0.5); 
+            animation: pulse 2s infinite;
+            line-height: 1.2;
+            z-index: 5; 
+        }
+        .title .squid-icon { 
+            font-size: 2.5rem; 
+            vertical-align: middle;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .floor {
+            position: relative;
+            width: 85%; 
+            max-width: 650px; 
+            height: 420px; 
+            background-color: #8B4513; 
+            background-image: 
+                repeating-linear-gradient(90deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 100px),
+                repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px),
+                linear-gradient(180deg, rgba(0,0,0,0.15) 0%, transparent 10%, transparent 90%, rgba(0,0,0,0.15) 100%),
+                linear-gradient(45deg, #A0522D 25%, transparent 25%, transparent 75%, #A0522D 75%, #A0522D), 
+                linear-gradient(-45deg, #A0522D 25%, transparent 25%, transparent 75%, #A0522D 75%, #A0522D);
+            background-size: 100px 100%, 100% 100%, 100% 100%, 50px 50px, 50px 50px;
+            border-radius: 15px; 
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.5), 
+                inset 0 5px 15px rgba(0,0,0,0.2), 
+                inset 0 -2px 5px rgba(255,255,255,0.1); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+            overflow: hidden; 
+            margin-top: 10px; 
+        }
+
+        .ground-ddakji {
+            width: 170px; 
+            height: 170px; 
+            position: relative;
+            transform-style: preserve-3d;
+            animation: idle 3s ease-in-out infinite;
+        }
+        .ground-ddakji.wobble { 
+            animation: idle 3s ease-in-out infinite, wobble-effect 0.6s ease-in-out 2;
+        }
+
+        @keyframes wobble-effect { 
+            0%, 100% { transform: rotateZ(0deg) translateY(0); }
+            25% { transform: rotateZ(-3deg) translateY(-2px); }
+            75% { transform: rotateZ(3deg) translateY(-2px); }
+        }
+
+        @keyframes idle {
+            0%, 100% { transform: translateY(0px) rotateZ(0deg) rotateY(0deg); } 
+            50% { transform: translateY(-3px) rotateZ(2deg) rotateY(0deg); }
+        }
+
+        .ground-ddakji.hit {
+            animation: flip 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes flip {
+            0% { transform: translateY(0px) rotateY(0deg) rotateX(0deg) scale(1); }
+            20% { transform: translateY(-10px) rotateY(45deg) rotateX(15deg) scale(1.05); }
+            50% { transform: translateY(-5px) rotateY(90deg) rotateX(0deg) scale(1.1); }
+            80% { transform: translateY(-2px) rotateY(135deg) rotateX(-5deg) scale(1.02); }
+            100% { transform: translateY(0px) rotateY(180deg) rotateX(0deg) scale(1); }
+        }
+
+        .thrown-ddakji {
+            width: 140px; 
+            height: 140px; 
+            position: absolute;
+            transform-style: preserve-3d;
+            cursor: grab;
+            z-index: 10;
+            transition: transform 0.15s ease-out; 
+        }
+        .thrown-ddakji.loading { 
+            animation: load-ddakji 0.3s ease-out forwards;
+        }
+
+        @keyframes load-ddakji {
+            0% { transform: translate(var(--current-drag-x, -50%), var(--current-drag-y, 0px)) scale(1); }
+            50% { transform: translate(var(--current-drag-x, -50%), var(--current-drag-y, 0px)) scale(0.92); } 
+            100% { transform: translate(var(--current-drag-x, -50%), var(--current-drag-y, 0px)) scale(1.1); } 
+        }
+
+        .thrown-ddakji.throwing {
+            animation: throw-animation 0.7s cubic-bezier(0.4, 0, 0.6, 1) forwards; 
+            cursor: default;
+            transition: none !important; 
+        }
+
+        @keyframes throw-animation {
+            0% { 
+                transform: translateY(var(--initial-throw-y, 0px)) translateX(var(--initial-throw-x, 0px)) rotateZ(var(--initial-throw-rotate, 0deg)) scale(1.1);
+                opacity: 1;
+            }
+            20% { 
+                transform: translateY(calc(var(--initial-throw-y, 0px) - 30px)) translateX(calc(var(--initial-throw-x, 0px) + var(--throw-x) * 0.3)) rotateZ(calc(var(--initial-throw-rotate, 0deg) + 90deg)) scale(1.0);
+                opacity: 1;
+            }
+            99% { 
+                transform: translateY(calc(var(--initial-throw-y, 0px) + 280px)) translateX(calc(var(--initial-throw-x, 0px) + var(--throw-x))) rotateZ(calc(var(--initial-throw-rotate, 0deg) + 360deg)) scale(0.80);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateY(calc(var(--initial-throw-y, 0px) + 280px)) translateX(calc(var(--initial-throw-x, 0px) + var(--throw-x))) rotateZ(calc(var(--initial-throw-rotate, 0deg) + 360deg)) scale(0.80);
+                opacity: 0;
+            }
+        }
+
+        .ddakji-symbol {
+            font-size: 3.5rem; 
+            line-height: 1;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .ddakji-side {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 8px; 
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid rgba(0,0,0,0.2); 
+            background-image:
+                linear-gradient(135deg, rgba(0,0,0,0.0) 45%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.0) 55%),
+                linear-gradient(45deg, rgba(255,255,255,0.0) 45%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.0) 55%),
+                repeating-linear-gradient(0deg, rgba(0,0,0,0.02), rgba(0,0,0,0.02) 1px, transparent 1px, transparent 3px),
+                repeating-linear-gradient(90deg, rgba(0,0,0,0.02), rgba(0,0,0,0.02) 1px, transparent 1px, transparent 3px);
+            box-shadow: 
+                inset 1px 1px 2px rgba(255,255,255,0.1), 
+                inset -1px -1px 2px rgba(0,0,0,0.15), 
+                0 8px 15px rgba(0,0,0,0.25); 
+        }
+        
+        .ddakji-front {
+            background-color: #D92D5C; 
+            color: white;
+            font-size: 1.4rem; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+        }
+
+        .ddakji-back { 
+            background-color: #2c3e50; 
+            color: white;
+            transform: rotateY(180deg);
+            padding: 12px; 
+            font-size: 1rem; 
+            text-align: center;
+            line-height: 1.35; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center; 
+        }
+
+        .thrown-ddakji .ddakji-front {
+            background-color: #008080; 
+            font-size: 1.2rem; 
+        }
+        .thrown-ddakji .ddakji-back {
+            background-color: #006666; 
+        }
+
+        .ddakji-back .invitation-title { 
+            font-size: 1.1rem; 
+            font-weight: bold;
+            margin-bottom: 7px; 
+            color: #FFD700; 
+            text-shadow: 1px 1px 1px #000;
+        }
+        .ddakji-back .invitation-details {
+            margin: 4px 0; 
+            font-size: 0.95rem; 
+            display: flex; 
+            align-items: center;
+            justify-content: center; 
+        }
+        .ddakji-back .emoji-icon {
+            font-size: 1.1em; 
+            margin-right: 5px;
+            line-height: 1; 
+        }
+        .ddakji-back .invitation-signature {
+            margin-top: 7px; 
+            font-style: italic;
+            color: #ffeb3b; 
+            font-size: 1rem; 
+        }
+        .ddakji-back .invitation-footer { 
+            margin-top: 7px; 
+            font-weight: bold;
+            color: #FF6B6B; 
+            font-size: 1rem; 
+        }
+        .ddakji-back .invitation-footer.highlight-footer { 
+            color: #FFF200; 
+            font-size: 1.05rem; 
+            text-shadow: 0 0 5px rgba(0,0,0,0.7), 0 0 3px #D92D5C; 
+            animation: pulseFooterText 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseFooterText {
+            0%, 100% { transform: scale(1); opacity: 1;}
+            50% { transform: scale(1.05); opacity: 0.9;}
+        }
+
+        .instruction {
+            color: white;
+            font-size: 1.1rem;
+            text-align: center;
+            margin-top: 15px; 
+            opacity: 0; 
+            animation: blink 2s infinite, fadeInInstruction 1s 1s ease-out forwards;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            visibility: visible; 
+            z-index: 5;
+        }
+
+        @keyframes fadeInInstruction {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 0.9; transform: translateY(0); } 
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 0.9; }
+            51%, 100% { opacity: 0.5; }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff6b6b;
+            animation: confetti-fall 3s linear infinite;
+            z-index: 100;
+        }
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0;}
+        }
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #ffd700, #ffed4e);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particle-explosion 1.5s ease-out forwards;
+            z-index: 100;
+        }
+        @keyframes particle-explosion {
+            0% { transform: scale(1) translate(0, 0); opacity: 1; }
+            100% { transform: scale(0) translate(var(--dx), var(--dy)); opacity: 0; }
+        }
+
+        .celebration {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3.5rem; 
+            opacity: 0;
+            animation: celebrate 2s ease-out forwards;
+            pointer-events: none;
+            z-index: 100;
+            color: #FFD700;
+            text-shadow: 0 0 8px #FF0054;
+        }
+        .celebration-symbol {
+            font-size: 3rem; 
+            vertical-align: middle;
+            margin: 0 5px;
+        }
+        @keyframes celebrate {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .reset-btn {
+            margin-top: 25px; 
+            padding: 10px 25px;
+            background: linear-gradient(145deg, #2a2a3f 0%, #1e1e2f 100%); 
+            color: #FFD700; 
+            border: 2px solid #FF0054; 
+            border-radius: 50px; 
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(30px) scale(0.7); 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            box-shadow: 
+                0 0 15px rgba(255, 0, 84, 0.3), 
+                inset 0 1px 2px rgba(255, 255, 255, 0.1), 
+                0 4px 8px rgba(0,0,0,0.3); 
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            visibility: hidden; 
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+        }
+        .reset-btn .reset-icon {
+            margin-right: 8px;
+            font-size: 1.2em; 
+            line-height: 1; 
+        }
+        .reset-btn.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            visibility: visible;
+        }
+        .reset-btn:hover {
+            background: linear-gradient(145deg, #3a3a4f 0%, #2e2e3f 100%); 
+            color: #fff; 
+            border-color: #FFD700; 
+            box-shadow: 
+                0 0 25px rgba(255, 215, 0, 0.5), 
+                inset 0 1px 3px rgba(255, 255, 255, 0.15),
+                0 6px 12px rgba(0,0,0,0.4);
+            transform: translateY(-3px) scale(1.05); 
+        }
+        .reset-btn:active {
+            transform: translateY(0px) scale(1); 
+            box-shadow: 
+                0 0 10px rgba(255, 0, 84, 0.2),
+                inset 0 2px 4px rgba(0,0,0,0.2), 
+                0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .impact-effect {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border: 3px solid #ffd700;
+            border-radius: 50%;
+            opacity: 0;
+            animation: impact-ring 0.6s ease-out forwards;
+            z-index: 5;
+        }
+        @keyframes impact-ring {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .title { font-size: 1.6rem; margin-bottom: 15px;} 
+            .title .squid-icon { font-size: 2rem; }
+            .floor { width: 90%; height: 380px; } 
+            .ground-ddakji { width: 140px; height: 140px; }
+            .thrown-ddakji { width: 120px; height: 120px; }
+            .ddakji-back { font-size: 0.8rem; padding: 8px; line-height: 1.3; }
+            .ddakji-back .invitation-title { font-size: 0.9rem; margin-bottom: 5px;}
+            .ddakji-back .invitation-details { font-size: 0.75rem; margin: 3px 0; }
+            .ddakji-back .emoji-icon { font-size: 1em; }
+            .ddakji-back .invitation-signature { font-size: 0.8rem; margin-top: 5px;}
+            .ddakji-back .invitation-footer { font-size: 0.8rem; margin-top: 5px; }
+            .ddakji-back .invitation-footer.highlight-footer { font-size: 0.85rem; }
+            .ddakji-symbol { font-size: 2.8rem; } 
+            .celebration { font-size: 3rem; }
+            .celebration-symbol { font-size: 2.5rem; }
+            .instruction { margin-top: 10px; font-size: 1rem; }
+            .reset-btn { padding: 8px 20px; font-size: 0.9rem; letter-spacing: 1px; }
+            .reset-btn .reset-icon { font-size: 1.1em; }
+        }
+         @media (max-width: 480px) { 
+            .title { font-size: 1.4rem; margin-bottom: 10px;}
+            .title .squid-icon { font-size: 1.8rem; }
+            .floor { height: 340px; }
+            .ground-ddakji { width: 120px; height: 120px; }
+            .thrown-ddakji { width: 100px; height: 100px; }
+            .ddakji-back { font-size: 0.7rem; padding: 6px; line-height: 1.25;}
+            .ddakji-back .invitation-title { font-size: 0.8rem;}
+            .ddakji-back .invitation-details { font-size: 0.65rem;}
+            .ddakji-back .emoji-icon { font-size: 0.9em; }
+            .ddakji-back .invitation-signature { font-size: 0.7rem;}
+            .ddakji-back .invitation-footer { font-size: 0.7rem;}
+            .ddakji-back .invitation-footer.highlight-footer { font-size: 0.75rem; }
+            .ddakji-symbol { font-size: 2.3rem; }
+            .celebration { font-size: 2.5rem; }
+            .celebration-symbol { font-size: 2rem; }
+            .reset-btn { padding: 8px 15px; font-size: 0.8rem;}
+            .reset-btn .reset-icon { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sg-symbols-pattern"></div>
+    <div class="game-container">
+        <h1 class="title"><span class="squid-icon">🦑</span> JUGÁ AL DDAKJI PARA IR AL CUMPLE DE MANU <span class="squid-icon">🦑</span></h1>
+        
+        <div class="thrown-ddakji" id="thrownDdakji">
+            <div class="ddakji-side ddakji-front"> LANZA <span class="ddakji-symbol">△</span> </div>
+            <div class="ddakji-side ddakji-back"> TU DDAKJI </div>
+        </div>
+        
+        <div class="floor">
+            <div class="ground-ddakji" id="groundDdakji">
+                <div class="ddakji-side ddakji-front"> OBJETIVO <span class="ddakji-symbol">ⵔ</span> </div>
+                <div class="ddakji-side ddakji-back">
+                    <div class="invitation-title">VENÍ A JUGAR A MI CUMPLE</div>
+                    <div class="invitation-details">
+                        <span class="emoji-icon">📅</span> JUEVES 26 DE JUNIO 18 HS
+                    </div>
+                    <div class="invitation-details">
+                        <span class="emoji-icon">📍</span> G-bunker Abasto Shopping
+                    </div>
+                    <div class="invitation-signature">Manu Morel</div>
+                    <div class="invitation-footer highlight-footer">¡No faltes!!!</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instruction" id="instruction"> 🎯 Arrastra y lanza tu Ddakji para voltear el objetivo y revelar la invitación. </div>
+        <button class="reset-btn" id="resetBtn"> <span class="reset-icon">🔄</span> REINICIAR JUEGO </button>
+    </div>
+
+    <script>
+        const thrownDdakji = document.getElementById('thrownDdakji');
+        const groundDdakji = document.getElementById('groundDdakji');
+        const instruction = document.getElementById('instruction');
+        const resetBtn = document.getElementById('resetBtn');
+        const gameContainer = document.querySelector('.game-container');
+        
+        let isDragging = false;
+        let dragStartX, dragStartY; 
+        let currentThrownX = 0; 
+        let currentThrownY = 0;
+        let currentThrownRotate = 0;
+
+        let gameCompleted = false;
+        let isAnimating = false; 
+
+        let throwImpactTimeoutId = null;
+        let hitEffectsTimeoutId = null;
+        let wobbleTimeoutId = null;
+
+        function resetThrownDdakji() {
+            isAnimating = true; 
+            thrownDdakji.style.transition = 'opacity 0.3s ease, transform 0.3s ease'; 
+            
+            const titleElement = document.querySelector('.title');
+            const titleHeight = titleElement ? titleElement.offsetHeight : 50; 
+            const viewportHeight = window.innerHeight;
+            
+            let initialTopPosition = viewportHeight * 0.22; 
+            if (initialTopPosition < titleHeight + 30) {
+                initialTopPosition = titleHeight + 30;
+            }
+            initialTopPosition = Math.min(initialTopPosition, viewportHeight * 0.30);
+
+            thrownDdakji.style.top = `${initialTopPosition}px`; 
+            thrownDdakji.style.left = '50%';
+            
+            currentThrownX = 0; 
+            currentThrownY = 0;
+            currentThrownRotate = 0;
+            thrownDdakji.style.transform = `translateX(-50%) translateY(${currentThrownY}px) rotateZ(${currentThrownRotate}deg) scale(1)`;
+            
+            thrownDdakji.style.opacity = '1';
+            thrownDdakji.classList.remove('throwing', 'loading');
+            thrownDdakji.style.removeProperty('--current-drag-x');
+            thrownDdakji.style.removeProperty('--current-drag-y');
+            thrownDdakji.style.removeProperty('--initial-throw-rotate');
+
+            setTimeout(() => {
+                thrownDdakji.style.transition = 'transform 0.15s ease-out'; 
+                isAnimating = false;
+            }, 300); 
+        }
+        
+        function createConfetti() {
+            if (document.querySelectorAll('.confetti').length > 70) return; 
+            for (let i = 0; i < 20; i++) { 
+                setTimeout(() => {
+                    if (!document.body) return;
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw'; 
+                    confetti.style.background = ['#FF0054', '#00A8A8', '#FFD700', '#FFFFFF', '#4CAF50'][Math.floor(Math.random() * 5)]; 
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's'; 
+                    confetti.style.animationDuration = (Math.random() * 1.5 + 1.5) + 's'; 
+                    document.body.appendChild(confetti);
+                    setTimeout(() => { if (confetti.parentElement) confetti.remove(); }, 3000); 
+                }, i * 50); 
+            }
+        }
+
+        function createImpactParticles(x, y) {
+            for (let i = 0; i < 18; i++) { 
+                if (!document.body) return;
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = x + 'px'; particle.style.top = y + 'px';
+                const angle = Math.random() * Math.PI * 2; 
+                const distance = 50 + Math.random() * 40; 
+                const dx = Math.cos(angle) * distance; const dy = Math.sin(angle) * distance;
+                particle.style.setProperty('--dx', dx + 'px'); particle.style.setProperty('--dy', dy + 'px');
+                particle.style.background = ['#FFD700', '#FF0054', '#00A8A8', '#FFFFFF'][Math.floor(Math.random() * 4)];
+                document.body.appendChild(particle);
+                setTimeout(() => { if (particle.parentElement) particle.remove(); }, 1500);
+            }
+        }
+
+        function createImpactEffect(x, y) {
+            if (!document.body) return;
+            const impact = document.createElement('div');
+            impact.className = 'impact-effect';
+            impact.style.left = (x - 75) + 'px'; impact.style.top = (y - 75) + 'px';
+            document.body.appendChild(impact);
+            setTimeout(() => { if (impact.parentElement) impact.remove(); }, 600);
+        }
+
+        function showCelebration() {
+            if (!document.body) return;
+            const celebration = document.createElement('div');
+            celebration.className = 'celebration';
+            celebration.innerHTML = `<span class="celebration-symbol">△</span> GANASTE <span class="celebration-symbol">ⵔ</span>`; 
+            document.body.appendChild(celebration);
+            setTimeout(() => { if (celebration.parentElement) celebration.remove(); }, 2000);
+        }
+        
+        function handleDragStart(e) {
+            if (isAnimating || gameCompleted) return;
+            
+            isDragging = true; 
+            thrownDdakji.style.transition = 'none'; 
+
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            
+            dragStartX = clientX - currentThrownX; 
+            dragStartY = clientY - currentThrownY;
+
+            thrownDdakji.classList.add('loading'); 
+            thrownDdakji.style.setProperty('--current-drag-x', `calc(-50% + ${currentThrownX}px)`);
+            thrownDdakji.style.setProperty('--current-drag-y', `${currentThrownY}px`);
+            
+            groundDdakji.classList.add('wobble');
+            if(wobbleTimeoutId) clearTimeout(wobbleTimeoutId);
+            wobbleTimeoutId = setTimeout(() => groundDdakji.classList.remove('wobble'), 1200); 
+
+            setTimeout(() => {
+                thrownDdakji.classList.remove('loading');
+            }, 300); 
+            
+            document.addEventListener('mousemove', handleDragMove);
+            document.addEventListener('touchmove', handleDragMove, { passive: false });
+            document.addEventListener('mouseup', handleDragEnd);
+            document.addEventListener('touchend', handleDragEnd);
+            
+            if (e.type === 'touchstart' || e.type === 'touchmove') {
+                 if (e.cancelable) e.preventDefault();
+            }
+        }
+
+        function handleDragMove(e) {
+            if (!isDragging) return; 
+            
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            
+            const prevX = currentThrownX;
+            currentThrownX = clientX - dragStartX;
+            currentThrownY = clientY - dragStartY;
+            const deltaMoveX = currentThrownX - prevX;
+            currentThrownRotate = Math.max(-20, Math.min(20, currentThrownRotate + deltaMoveX * 0.1));
+
+            thrownDdakji.style.transform = `translateX(calc(-50% + ${currentThrownX}px)) translateY(${currentThrownY}px) rotateZ(${currentThrownRotate}deg) scale(1.1)`;
+            
+            thrownDdakji.style.setProperty('--current-drag-x', `calc(-50% + ${currentThrownX}px)`);
+            thrownDdakji.style.setProperty('--current-drag-y', `${currentThrownY}px`);
+            
+            if (e.type === 'touchmove') { if (e.cancelable) e.preventDefault(); }
+        }
+
+        function handleDragEnd(e) {
+            if (!isDragging && !thrownDdakji.classList.contains('loading')) return;
+
+            isDragging = false;
+            isAnimating = true; 
+            thrownDdakji.classList.remove('loading'); 
+            groundDdakji.classList.remove('wobble'); 
+            if(wobbleTimeoutId) clearTimeout(wobbleTimeoutId);
+
+            thrownDdakji.style.setProperty('--initial-throw-x', `${currentThrownX}px`);
+            thrownDdakji.style.setProperty('--initial-throw-y', `${currentThrownY}px`);
+            thrownDdakji.style.setProperty('--initial-throw-rotate', `${currentThrownRotate}deg`);
+            
+            let throwForceX = currentThrownX * 0.25; 
+            const maxThrowX = (gameContainer.offsetWidth / 2) * 0.4; 
+            throwForceX = Math.max(-maxThrowX, Math.min(maxThrowX, throwForceX));
+            thrownDdakji.style.setProperty('--throw-x', `${throwForceX}px`);
+            
+            thrownDdakji.classList.add('throwing');
+            
+            if (throwImpactTimeoutId) clearTimeout(throwImpactTimeoutId);
+            throwImpactTimeoutId = setTimeout(() => {
+                if (!gameCompleted) { hitTarget(); }
+            }, 690); 
+
+            document.removeEventListener('mousemove', handleDragMove);
+            document.removeEventListener('touchmove', handleDragMove);
+            document.addEventListener('mouseup', handleDragEnd);
+            document.addEventListener('touchend', handleDragEnd);
+        }
+
+        function hitTarget() {
+             if (gameCompleted) return; 
+            gameCompleted = true; if(!isAnimating) isAnimating = true;
+            const groundRect = groundDdakji.getBoundingClientRect();
+            const impactX = groundRect.left + groundRect.width / 2;
+            const impactY = groundRect.top + groundRect.height / 2;
+            createImpactEffect(impactX, impactY); createImpactParticles(impactX, impactY);
+            groundDdakji.classList.add('hit'); 
+            if (navigator.vibrate) { navigator.vibrate([100, 30, 100, 30, 150]); }
+            instruction.style.opacity = '0'; instruction.style.visibility = 'hidden'; 
+            if (hitEffectsTimeoutId) clearTimeout(hitEffectsTimeoutId);
+            hitEffectsTimeoutId = setTimeout(() => {
+                createConfetti(); showCelebration(); resetBtn.classList.add('show');
+                isAnimating = false; 
+            }, 800); 
+        }
+
+        resetBtn.addEventListener('click', function() {
+             if (isAnimating && !gameCompleted) { return; }
+            if (throwImpactTimeoutId) { clearTimeout(throwImpactTimeoutId); throwImpactTimeoutId = null;}
+            if (hitEffectsTimeoutId) { clearTimeout(hitEffectsTimeoutId); hitEffectsTimeoutId = null;}
+            if (wobbleTimeoutId) { clearTimeout(wobbleTimeoutId); wobbleTimeoutId = null; }
+            isAnimating = true; gameCompleted = false;
+            groundDdakji.classList.remove('hit', 'wobble');
+            groundDdakji.style.animation = 'none'; void groundDdakji.offsetWidth; 
+            groundDdakji.style.animation = ''; groundDdakji.style.transform = 'rotateY(0deg)'; 
+            resetThrownDdakji(); 
+            resetBtn.classList.remove('show');
+            instruction.style.opacity = '0'; instruction.style.visibility = 'visible';
+            instruction.style.animation = 'none'; void instruction.offsetWidth;
+            instruction.style.animation = 'blink 2s infinite, fadeInInstruction 1s 0.2s ease-out forwards';
+            document.querySelectorAll('.confetti, .particle, .impact-effect, .celebration').forEach(el => el.remove());
+            setTimeout(() => { if (!isDragging) { isAnimating = false; } }, 350); 
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => { resetThrownDdakji(); });
+        const confettiInterval = setInterval(() => { if (!gameCompleted && !isAnimating) { createConfetti(); } }, 7000);
+        thrownDdakji.addEventListener('mousedown', handleDragStart);
+        thrownDdakji.addEventListener('touchstart', handleDragStart, { passive: false });
+        window.addEventListener('resize', () => { if (!gameCompleted && !isDragging && !isAnimating) { resetThrownDdakji(); } });
+    </script>
+</body>
+</html>
